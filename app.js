@@ -37,11 +37,12 @@
     }
 
     try {
-      state.api = await TrimbleConnectWorkspace.connect(
-        window.parent,
-        handleWorkspaceEvent,
-        30000
-      );
+      state.api =
+        await TrimbleConnectWorkspace.connect(
+          window.parent,
+          handleWorkspaceEvent,
+          30000
+        );
 
       await refreshLayers();
 
@@ -78,16 +79,22 @@
       document.getElementById("groupName");
 
     elements.createGroupButton =
-      document.getElementById("createGroupButton");
+      document.getElementById(
+        "createGroupButton"
+      );
 
     elements.groupList =
       document.getElementById("groupList");
 
     elements.isolateToggle =
-      document.getElementById("isolateToggle");
+      document.getElementById(
+        "isolateToggle"
+      );
 
     elements.clearSelectionButton =
-      document.getElementById("clearSelectionButton");
+      document.getElementById(
+        "clearSelectionButton"
+      );
 
     elements.status =
       document.getElementById("status");
@@ -122,7 +129,8 @@
 
   function handleWorkspaceEvent(event) {
     if (
-      event === "viewer.onModelStateChanged" ||
+      event ===
+        "viewer.onModelStateChanged" ||
       event === "viewer.onModelReset" ||
       event === "project.onChanged"
     ) {
@@ -147,44 +155,64 @@
         '<div class="empty-state">Reading loaded models and layers…</div>';
 
       const models =
-        await state.api.viewer.getModels("loaded");
+        await state.api.viewer.getModels(
+          "loaded"
+        );
 
-      state.models = Array.isArray(models)
-        ? models
-        : [];
+      state.models =
+        Array.isArray(models)
+          ? models
+          : [];
 
-      const results = await Promise.all(
-        state.models.map(async (model) => {
-          const modelId = viewerModelId(model);
+      const results =
+        await Promise.all(
+          state.models.map(
+            async (model) => {
+              const modelId =
+                viewerModelId(model);
 
-          try {
-            const layers =
-              await state.api.viewer.getLayers(modelId);
+              try {
+                const layers =
+                  await state.api.viewer.getLayers(
+                    modelId
+                  );
 
-            return (layers || []).map((layer) => ({
-              key: `${modelId}::${layer.name}`,
-              modelId,
-              modelName:
-                model.name ||
-                model.id ||
-                modelId,
-              layerName: layer.name,
-              visible: layer.visible !== false
-            }));
-          } catch (error) {
-            console.warn(
-              "Could not read layers for",
-              model.name,
-              error
-            );
+                return (layers || []).map(
+                  (layer) => ({
+                    key:
+                      `${modelId}::${layer.name}`,
 
-            return [];
-          }
-        })
-      );
+                    modelId,
+
+                    modelName:
+                      model.name ||
+                      model.id ||
+                      modelId,
+
+                    layerName:
+                      layer.name,
+
+                    visible:
+                      layer.visible !== false
+                  })
+                );
+              } catch (error) {
+                console.warn(
+                  "Could not read layers for",
+                  model.name,
+                  error
+                );
+
+                return [];
+              }
+            }
+          )
+        );
 
       state.layerIndex =
-        results.flat().sort(compareLayers);
+        results
+          .flat()
+          .sort(compareLayers);
 
       state.objectLayerCache.clear();
 
@@ -222,16 +250,22 @@
   }
 
   function renderLayerList() {
-    const search = normalise(
-      elements.layerSearch.value
-    );
+    const search =
+      normalise(
+        elements.layerSearch.value
+      );
 
-    const filtered = state.layerIndex.filter(
-      (item) =>
-        !search ||
-        normalise(item.layerName).includes(search) ||
-        normalise(item.modelName).includes(search)
-    );
+    const filtered =
+      state.layerIndex.filter(
+        (item) =>
+          !search ||
+          normalise(
+            item.layerName
+          ).includes(search) ||
+          normalise(
+            item.modelName
+          ).includes(search)
+      );
 
     if (!filtered.length) {
       elements.layerList.innerHTML =
@@ -245,19 +279,31 @@
     const grouped = new Map();
 
     for (const layer of filtered) {
-      if (!grouped.has(layer.modelId)) {
-        grouped.set(layer.modelId, {
-          modelName: layer.modelName,
-          layers: []
-        });
+      if (
+        !grouped.has(layer.modelId)
+      ) {
+        grouped.set(
+          layer.modelId,
+          {
+            modelName:
+              layer.modelName,
+
+            layers: []
+          }
+        );
       }
 
-      grouped.get(layer.modelId).layers.push(layer);
+      grouped
+        .get(layer.modelId)
+        .layers.push(layer);
     }
 
     elements.layerList.innerHTML = "";
 
-    for (const group of grouped.values()) {
+    for (
+      const group of
+      grouped.values()
+    ) {
       const block =
         document.createElement("div");
 
@@ -267,12 +313,18 @@
         document.createElement("div");
 
       title.className = "model-title";
-      title.textContent = group.modelName;
-      title.title = group.modelName;
+      title.textContent =
+        group.modelName;
+
+      title.title =
+        group.modelName;
 
       block.appendChild(title);
 
-      for (const layer of group.layers) {
+      for (
+        const layer of
+        group.layers
+      ) {
         const label =
           document.createElement("label");
 
@@ -282,7 +334,10 @@
           document.createElement("input");
 
         checkbox.type = "checkbox";
-        checkbox.className = "layer-checkbox";
+
+        checkbox.className =
+          "layer-checkbox";
+
         checkbox.value = layer.key;
 
         checkbox.dataset.modelId =
@@ -298,7 +353,9 @@
           document.createElement("span");
 
         name.className = "layer-name";
-        name.textContent = layer.layerName;
+
+        name.textContent =
+          layer.layerName;
 
         label.append(
           checkbox,
@@ -308,7 +365,9 @@
         block.appendChild(label);
       }
 
-      elements.layerList.appendChild(block);
+      elements.layerList.appendChild(
+        block
+      );
     }
   }
 
@@ -322,12 +381,12 @@
       )
     ];
 
-    const checkedMode =
+    const selectedMode =
       document.querySelector(
         'input[name="matchMode"]:checked'
       );
 
-    if (!checkedMode) {
+    if (!selectedMode) {
       showStatus(
         "Select a grouping mode.",
         true
@@ -336,7 +395,8 @@
       return;
     }
 
-    const matchMode = checkedMode.value;
+    const matchMode =
+      selectedMode.value;
 
     if (!name) {
       showStatus(
@@ -349,14 +409,15 @@
     }
 
     const duplicateExists =
-      state.groups.some((group) =>
-        group.name.localeCompare(
-          name,
-          undefined,
-          {
-            sensitivity: "accent"
-          }
-        ) === 0
+      state.groups.some(
+        (group) =>
+          group.name.localeCompare(
+            name,
+            undefined,
+            {
+              sensitivity: "accent"
+            }
+          ) === 0
       );
 
     if (duplicateExists) {
@@ -377,18 +438,19 @@
       return;
     }
 
-    let targets = selected.map(
-      (checkbox) => ({
-        modelId:
-          checkbox.dataset.modelId,
+    let targets =
+      selected.map(
+        (checkbox) => ({
+          modelId:
+            checkbox.dataset.modelId,
 
-        modelName:
-          checkbox.dataset.modelName,
+          modelName:
+            checkbox.dataset.modelName,
 
-        layerName:
-          checkbox.dataset.layerName
-      })
-    );
+          layerName:
+            checkbox.dataset.layerName
+        })
+      );
 
     targets = uniqueTargets(
       targets,
@@ -425,24 +487,26 @@
   ) {
     const seen = new Set();
 
-    return targets.filter((target) => {
-      const key =
-        matchMode ===
-        "layer-name-all-files"
-          ? normalise(
-              target.layerName
-            )
-          : `${target.modelId}::${normalise(
-              target.layerName
-            )}`;
+    return targets.filter(
+      (target) => {
+        const key =
+          matchMode ===
+          "layer-name-all-files"
+            ? normalise(
+                target.layerName
+              )
+            : `${target.modelId}::${normalise(
+                target.layerName
+              )}`;
 
-      if (seen.has(key)) {
-        return false;
+        if (seen.has(key)) {
+          return false;
+        }
+
+        seen.add(key);
+        return true;
       }
-
-      seen.add(key);
-      return true;
-    });
+    );
   }
 
   function renderGroups() {
@@ -455,7 +519,10 @@
 
     elements.groupList.innerHTML = "";
 
-    for (const group of state.groups) {
+    for (
+      const group of
+      state.groups
+    ) {
       const card =
         document.createElement("div");
 
@@ -481,8 +548,11 @@
       const groupName =
         document.createElement("span");
 
-      groupName.className = "group-name";
-      groupName.textContent = group.name;
+      groupName.className =
+        "group-name";
+
+      groupName.textContent =
+        group.name;
 
       const meta =
         document.createElement("span");
@@ -516,14 +586,18 @@
       const actions =
         document.createElement("div");
 
-      actions.className = "group-actions";
+      actions.className =
+        "group-actions";
 
       const rename =
         document.createElement("button");
 
       rename.type = "button";
-      rename.className = "group-action";
-      rename.textContent = "Rename";
+      rename.className =
+        "group-action";
+
+      rename.textContent =
+        "Rename";
 
       rename.addEventListener(
         "click",
@@ -534,10 +608,12 @@
         document.createElement("button");
 
       remove.type = "button";
+
       remove.className =
         "group-action delete";
 
-      remove.textContent = "Delete";
+      remove.textContent =
+        "Delete";
 
       remove.addEventListener(
         "click",
@@ -554,14 +630,17 @@
         actions
       );
 
-      elements.groupList.appendChild(card);
+      elements.groupList.appendChild(
+        card
+      );
     }
   }
 
   function renameGroup(groupId) {
     const group =
       state.groups.find(
-        (item) => item.id === groupId
+        (item) =>
+          item.id === groupId
       );
 
     if (!group) {
@@ -620,7 +699,8 @@
   async function deleteGroup(groupId) {
     const group =
       state.groups.find(
-        (item) => item.id === groupId
+        (item) =>
+          item.id === groupId
       );
 
     if (!group) {
@@ -628,11 +708,13 @@
     }
 
     const wasActive =
-      state.activeGroupId === groupId;
+      state.activeGroupId ===
+      groupId;
 
     state.groups =
       state.groups.filter(
-        (item) => item.id !== groupId
+        (item) =>
+          item.id !== groupId
       );
 
     if (wasActive) {
@@ -653,7 +735,8 @@
 
     const group =
       state.groups.find(
-        (item) => item.id === groupId
+        (item) =>
+          item.id === groupId
       );
 
     if (!group) {
@@ -673,7 +756,9 @@
       );
 
       const entities =
-        await resolveGroupEntities(group);
+        await resolveGroupEntities(
+          group
+        );
 
       if (
         activationId !==
@@ -697,12 +782,20 @@
         return;
       }
 
-  const selector = {
-  modelObjectIds: entities.map((item) => ({
-    modelId: item.modelId,
-    objectRuntimeIds: item.entityIds
-  }))
-};
+      const selector = {
+        modelObjectIds:
+          entities.map(
+            (item) => ({
+              modelId:
+                item.modelId,
+
+              objectRuntimeIds:
+                item.entityIds,
+
+              recursive: false
+            })
+          )
+      };
 
       await state.api.viewer.setSelection(
         selector,
@@ -842,7 +935,9 @@
         wantedNames
       ) {
         const layerIds =
-          layerMap.get(wantedName);
+          layerMap.get(
+            wantedName
+          );
 
         if (layerIds) {
           ids.push(...layerIds);
@@ -856,7 +951,8 @@
       if (uniqueIds.length) {
         resolved.push({
           modelId,
-          entityIds: uniqueIds
+          entityIds:
+            uniqueIds
         });
       }
     }
@@ -873,17 +969,16 @@
   }
 
   /*
-   * Trimble returns the available layer names,
+   * Trimble returns layer names and visibility,
    * but does not return the object IDs assigned
    * to each layer.
    *
-   * This function reads the actual properties
-   * of every object and builds:
+   * This builds:
    *
    * Layer name -> object runtime IDs
    *
-   * It never falls back to selecting the whole
-   * IFC model.
+   * There is deliberately no whole-model
+   * fallback.
    */
   async function getObjectLayerMap(
     modelId
@@ -921,7 +1016,8 @@
       groups || []
     ) {
       if (
-        group.modelId !== modelId
+        group.modelId !==
+        modelId
       ) {
         continue;
       }
@@ -957,7 +1053,8 @@
         modelId
       );
 
-      const emptyMap = new Map();
+      const emptyMap =
+        new Map();
 
       state.objectLayerCache.set(
         modelId,
@@ -1071,6 +1168,7 @@
           ].map(
             ([name, ids]) => ({
               layer: name,
+
               objectCount:
                 ids.length
             })
@@ -1219,10 +1317,9 @@
           return;
         }
 
-        await state.api.viewer
-          .isolateEntities(
-            state.lastResolvedEntities
-          );
+        await state.api.viewer.isolateEntities(
+          state.lastResolvedEntities
+        );
 
         state.extensionAppliedIsolation =
           true;
@@ -1280,13 +1377,15 @@
               layer.modelId ===
               modelId
           )
-          .map((layer) => ({
-            name:
-              layer.layerName,
+          .map(
+            (layer) => ({
+              name:
+                layer.layerName,
 
-            visible:
-              layer.visible
-          }));
+              visible:
+                layer.visible
+            })
+          );
 
       if (snapshot.length) {
         await state.api.viewer
@@ -1326,6 +1425,7 @@
       }
 
       state.activeGroupId = null;
+
       state.lastResolvedEntities = [];
 
       elements.isolateToggle.checked =
@@ -1372,15 +1472,20 @@
 
     elements.status.className =
       `status show${
-        isError ? " error" : ""
+        isError
+          ? " error"
+          : ""
       }`;
 
     if (duration > 0) {
       statusTimer =
-        window.setTimeout(() => {
-          elements.status.className =
-            "status";
-        }, duration);
+        window.setTimeout(
+          () => {
+            elements.status.className =
+              "status";
+          },
+          duration
+        );
     }
   }
 
