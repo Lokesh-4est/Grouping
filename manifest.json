@@ -1,6 +1,6 @@
 {
   "title": "Layer Group Selector",
   "description": "Group IFC layers across your project's models and select or isolate all objects in a group with one click. Groups are session-only (not saved).",
-  "url": "https://github.com/Lokesh-4est/Grouping/blob/main/index.html",
+  "url": "https://raw.githubusercontent.com/Lokesh-4est/Grouping/main/index.html",
   "icon": ""
 }
