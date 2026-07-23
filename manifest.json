@@ -1,0 +1,7 @@
+{
+  "title": "4EST Layer Groups",
+  "description": "Create temporary selection groups from Trimble Connect model layers.",
+  "url": "https://lokesh-4est.github.io/Grouping/index.html",
+  "icon": "https://lokesh-4est.github.io/Grouping/icon.svg",
+  "enabled": true
+}
