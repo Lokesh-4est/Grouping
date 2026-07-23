@@ -697,11 +697,10 @@
         return;
       }
 
-    const selector = {
+  const selector = {
   modelObjectIds: entities.map((item) => ({
     modelId: item.modelId,
-    objectRuntimeIds: item.entityIds,
-    recursive: false
+    objectRuntimeIds: item.entityIds
   }))
 };
 
