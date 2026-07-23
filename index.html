@@ -4,7 +4,371 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>4EST Layer Groups</title>
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --brand: #0878bd;
+      --brand-dark: #05649e;
+      --brand-soft: #eaf5fc;
+      --ink: #17212b;
+      --muted: #667482;
+      --line: #d9e1e8;
+      --surface: #fff;
+      --canvas: #f3f6f8;
+      --danger: #c1372a;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-width: 280px;
+      background: var(--canvas);
+      color: var(--ink);
+      font: 14px/1.4 Inter, "Segoe UI", Arial, sans-serif;
+    }
+
+    button, input { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .app {
+      width: 100%;
+      padding: 12px;
+      padding-bottom: 58px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      padding: 4px 2px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: -.2px;
+    }
+
+    .header p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .panel {
+      margin-bottom: 10px;
+      padding: 12px;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(23, 33, 43, .06);
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #344250;
+    }
+
+    .text-input {
+      width: 100%;
+      min-width: 0;
+      height: 36px;
+      padding: 7px 10px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid #cbd5de;
+      border-radius: 7px;
+      outline: none;
+    }
+
+    .text-input::placeholder { color: #98a4af; }
+
+    .text-input:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(8, 120, 189, .12);
+    }
+
+    .layer-list {
+      max-height: 310px;
+      margin-top: 9px;
+      overflow: auto;
+      overscroll-behavior: contain;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      scrollbar-width: thin;
+    }
+
+    .model-block + .model-block { border-top: 1px solid var(--line); }
+
+    .model-title {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      padding: 7px 9px;
+      overflow: hidden;
+      color: #536270;
+      background: #f2f6f9;
+      border-bottom: 1px solid #e7edf2;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .15px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .layer-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      min-height: 34px;
+      padding: 7px 9px;
+      cursor: pointer;
+      border-bottom: 1px solid #eef2f5;
+    }
+
+    .layer-row:last-child { border-bottom: 0; }
+    .layer-row:hover { background: var(--brand-soft); }
+
+    .layer-row input {
+      flex: 0 0 auto;
+      width: 15px;
+      height: 15px;
+      margin: 2px 0 0;
+      accent-color: var(--brand);
+    }
+
+    .layer-name {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      font-size: 12.5px;
+    }
+
+    .mode-box {
+      margin: 12px 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .mode-box legend {
+      margin-bottom: 5px;
+      padding: 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: #344250;
+    }
+
+    .radio-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin: 0;
+      padding: 8px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+    }
+
+    .radio-row:first-of-type { border-radius: 8px 8px 0 0; }
+    .radio-row:last-of-type {
+      border-top: 0;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .radio-row:has(input:checked) {
+      position: relative;
+      z-index: 1;
+      background: var(--brand-soft);
+      border-color: #8ac6e7;
+    }
+
+    .radio-row input {
+      flex: 0 0 auto;
+      margin: 2px 0 0;
+      accent-color: var(--brand);
+    }
+
+    .radio-row strong, .radio-row small { display: block; }
+    .radio-row strong { font-size: 12.5px; }
+
+    .radio-row small {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .primary-button {
+      width: 100%;
+      min-height: 38px;
+      padding: 8px 12px;
+      color: #fff;
+      background: var(--brand);
+      border: 0;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 1px 2px rgba(0, 73, 115, .2);
+    }
+
+    .primary-button:hover { background: var(--brand-dark); }
+
+    .primary-button:disabled, .icon-button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .icon-button {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      color: var(--brand);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .icon-button:hover { background: var(--brand-soft); }
+
+    .section-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .section-title-row h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .section-title-row small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .text-button, .group-action {
+      padding: 4px;
+      color: var(--brand);
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0 9px;
+      padding: 8px 9px;
+      cursor: pointer;
+      background: #f7f9fb;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .toggle-row input {
+      margin: 0;
+      accent-color: var(--brand);
+    }
+
+    .group-list {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .group-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 6px;
+      min-height: 48px;
+      padding: 8px;
+    }
+
+    .group-card + .group-card { border-top: 1px solid var(--line); }
+    .group-card.active { background: var(--brand-soft); }
+
+    .group-main {
+      min-width: 0;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .group-name {
+      display: block;
+      overflow: hidden;
+      font-size: 12.5px;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .group-meta {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10.5px;
+    }
+
+    .group-actions { display: flex; }
+    .group-action.delete { color: var(--danger); }
+
+    .empty-state {
+      padding: 20px 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .status {
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+      left: 10px;
+      z-index: 50;
+      display: none;
+      padding: 10px 12px;
+      color: #fff;
+      background: #17212b;
+      border-radius: 8px;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, .2);
+      font-size: 12px;
+    }
+
+    .status.show { display: block; }
+    .status.error { background: var(--danger); }
+
+    @media (max-width: 320px) {
+      .app { padding: 8px; padding-bottom: 54px; }
+      .panel { padding: 10px; border-radius: 8px; }
+      .layer-list { max-height: 270px; }
+      .radio-row small { display: none; }
+    }
+  </style>
 </head>
 <body>
   <main class="app">
