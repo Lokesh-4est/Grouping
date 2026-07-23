@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>4EST Layer Groups</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div>
+        <h1>Layer Groups</h1>
+        <p>Temporary groups for this viewer session</p>
+      </div>
+      <button id="refreshButton" class="icon-button" type="button" title="Refresh layers">↻</button>
+    </header>
+
+    <section class="panel">
+      <label class="field-label" for="layerSearch">Available layers</label>
+      <input id="layerSearch" class="text-input" type="search" placeholder="Search file or layer">
+      <div id="layerList" class="layer-list">
+        <div class="empty-state">Connecting to Trimble Connect…</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <label class="field-label" for="groupName">Group name</label>
+      <input id="groupName" class="text-input" type="text" maxlength="80" placeholder="For example: Structural steel">
+
+      <fieldset class="mode-box">
+        <legend>Grouping mode</legend>
+        <label class="radio-row">
+          <input type="radio" name="matchMode" value="file-layer" checked>
+          <span>
+            <strong>Selected file + layer</strong>
+            <small>ANGLE in ST.ifc stays separate from ANGLE in other files.</small>
+          </span>
+        </label>
+        <label class="radio-row">
+          <input type="radio" name="matchMode" value="layer-name-all-files">
+          <span>
+            <strong>Same layer name across all files</strong>
+            <small>ANGLE includes matching ANGLE layers in every loaded file.</small>
+          </span>
+        </label>
+      </fieldset>
+
+      <button id="createGroupButton" class="primary-button" type="button">Create group</button>
+    </section>
+
+    <section class="panel">
+      <div class="section-title-row">
+        <div>
+          <h2>Groups</h2>
+          <small>Cleared when the viewer is reloaded</small>
+        </div>
+        <button id="clearSelectionButton" class="text-button" type="button">Clear selection</button>
+      </div>
+
+      <label class="toggle-row">
+        <input id="isolateToggle" type="checkbox">
+        <span>Isolate selected group</span>
+      </label>
+
+      <div id="groupList" class="group-list">
+        <div class="empty-state">No groups created yet.</div>
+      </div>
+    </section>
+
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+  </main>
+
+  <script src="https://components.connect.trimble.com/trimble-connect-workspace-api/index.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
