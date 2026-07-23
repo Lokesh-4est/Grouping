@@ -697,15 +697,13 @@
         return;
       }
 
-      const selector = {
-        modelObjectIds:
-          entities.map((item) => ({
-            modelId: item.modelId,
-
-            objectRuntimeIds:
-              item.entityIds
-          }))
-      };
+    const selector = {
+  modelObjectIds: entities.map((item) => ({
+    modelId: item.modelId,
+    objectRuntimeIds: item.entityIds,
+    recursive: false
+  }))
+};
 
       await state.api.viewer.setSelection(
         selector,
